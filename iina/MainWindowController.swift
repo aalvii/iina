@@ -364,6 +364,10 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
       w.setFrame(wf, display: false)
     }
 
+    if playerCore.info.currentURL != nil {
+      initialWindowView.view.isHidden = true
+    }
+
     w.contentView?.addSubview(initialWindowView.view, positioned: .below, relativeTo: nil)
     quickConstraints(["H:|-0-[v]-0-|", "V:|-0-[v]-0-|"], ["v": initialWindowView.view])
 
@@ -411,10 +415,12 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
     [titleBarView, osdVisualEffectView, controlBarBottom, controlBarFloating, sideBarView, osdVisualEffectView, pipOverlayView].forEach {
       $0?.state = .active
     }
-    // hide ui when intial view is active
-    controlBarFloating.isHidden = true
-    controlBarBottom.isHidden = true
-    titleBarView.isHidden = true
+    // hide ui when initial view is active
+    if !initialWindowView.view.isHidden {
+      controlBarFloating.isHidden = true
+      controlBarBottom.isHidden = true
+      titleBarView.isHidden = true
+    }
     // hide other views
     osdVisualEffectView.isHidden = true
     osdVisualEffectView.layer?.cornerRadius = 10
@@ -596,7 +602,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
 
   private func setupOnScreenController(position newPosition: Preference.OSCPosition) {
 
-    var isCurrentControlBarHidden = false
+    var isCurrentControlBarHidden = true
 
     let isSwitchingToTop = newPosition == .top
     let isSwitchingFromTop = oscPosition == .top
